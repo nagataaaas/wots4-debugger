@@ -18,12 +18,11 @@ if(WOTS4_BUILD_TESTS)
     # ModLoader 経由で読み込まれ、例外が記録され、アプリ側の例外処理にも届くことを確かめる
     add_executable(crash_log_loader_probe tests/crash_log_loader_probe.cpp)
     target_link_libraries(crash_log_loader_probe PRIVATE dxguid.lib)
-    if(TARGET wots4_loader)
-        add_test(NAME crash_log_loader_probe COMMAND ${CMAKE_COMMAND}
-            -DPROBE=$<TARGET_FILE:crash_log_loader_probe>
-            -DLOADER=$<TARGET_FILE:wots4_loader>
-            -DMOD=$<TARGET_FILE:mod_debugger>
-            -DWORK=${CMAKE_CURRENT_BINARY_DIR}/crash_log_tree
-            -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_crash_log_probe.cmake)
-    endif()
+    wots4_add_loader()  # 単体でビルドするときは、テスト用に ModLoader も作る
+    add_test(NAME crash_log_loader_probe COMMAND ${CMAKE_COMMAND}
+        -DPROBE=$<TARGET_FILE:crash_log_loader_probe>
+        -DLOADER=$<TARGET_FILE:wots4_loader>
+        -DMOD=$<TARGET_FILE:mod_debugger>
+        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/crash_log_tree
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_crash_log_probe.cmake)
 endif()
