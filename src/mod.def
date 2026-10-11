@@ -1,3 +1,4 @@
 LIBRARY mod
 EXPORTS
     Wots4ModInitialize=_Wots4ModInitialize@4
+    Wots4DebuggerNote=_Wots4DebuggerNote@8

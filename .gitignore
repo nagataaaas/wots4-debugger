@@ -1,7 +1,7 @@
-# 解析資料（解析ツール・解析した情報・exe など）はコミットしない
+# Do not commit analysis material (analysis tools, analyzed information, exe, etc.)
 /research/
 
-# AI まわり
+# AI-related
 AGENTS.md
 CLAUDE.md
 .claude
@@ -22,7 +22,7 @@ TODO.md
 **/.claude/first-run
 **/.claude/assistant-daemon-state.json
 
-# ビルドの出力
+# Build output
 build/
 out/
 stage/
@@ -37,11 +37,11 @@ dist/
 *.exe
 __pycache__/
 
-# ログ
+# Logs
 logs
 *.log
 
-# エディタ
+# Editors
 *.local
 .vscode/*
 !.vscode/extensions.json
