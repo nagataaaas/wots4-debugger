@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 env:
-  WOTS4_SDK_REF: 3c00fc96cc472e3b3ca3f03a3cdcb5d3253d564c  # ModLoader version to use. Once a ModLoader release is out, set it to that tag (e.g. v0.1.0)
+  WOTS4_SDK_REF: master  # ModLoader version to use. Pinning it to a release tag (e.g. v0.1.0) is recommended
   MOD_NAME: debugger
 
 jobs:
