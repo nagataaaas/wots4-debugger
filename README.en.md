@@ -67,6 +67,7 @@ minidump=standard
 | `full` | All process memory | Hundreds of MB to several GB |
 
 If you write an invalid value, the default value is used and this is written to `mod_loader.log`.
+If the minidump cannot be written with `standard` or `full`, it is written again with `small`. The level actually written is shown in "the result of the minidump" in the error log.
 Minidumps can be opened in WinDbg or Visual Studio.
 
 ## Leaving clues from other Mods (notes)

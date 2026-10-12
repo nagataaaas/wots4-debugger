@@ -67,6 +67,7 @@ minidump=standard
 | `full` | プロセスのメモリすべて | 数百 MB〜数 GB |
 
 使えない値を書いたときは既定の値にして、`mod_loader.log` にそのことを書きます。
+`standard` や `full` で書けなかったときは、`small` で書き直します。どのレベルで書けたかは、エラーログの「ミニダンプの結果」に出ます。
 ミニダンプは WinDbg や Visual Studio で開けます。
 
 ## 他の Mod から手がかりを残す（ノート）

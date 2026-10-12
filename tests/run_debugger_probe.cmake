@@ -83,7 +83,8 @@ expect(text MATCHES "esp\\+[0-9a-f]+ [0-9a-f]+ debugger_probe.exe\\+[0-9a-f]+ \\
 expect(text MATCHES "==== Fatal exception" "the unhandled exception filter records the fatal exception")
 expect(text MATCHES "\\[debugger_probe.exe\\] probe note 1" "notes are recorded")
 expect(text MATCHES "Loaded modules:\n[^=]*mods\\\\debugger\\\\mod.dll" "the module list is recorded")
-expect(text MATCHES "Minidump: written to crash_[0-9_]+\\.dmp \\(level=standard\\)" "the minidump result is recorded")
+# Memory freed while dbghelp reads it is left out ("; N memory ranges ..."), but the level stays standard
+expect(text MATCHES "Minidump: written to crash_[0-9_]+\\.dmp \\(level=standard[;)]" "the minidump result is recorded")
 list(LENGTH dumps count)
 expect(count EQUAL 1 "one crash_*.dmp")
 string(REGEX MATCH "error_([0-9_]+)\\.log$" matched "${logs}")
