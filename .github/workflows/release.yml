@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 env:
-  WOTS4_SDK_REF: v2026.10.12  # ModLoader version to build against
+  WOTS4_SDK_REF: v2026.10.14  # ModLoader version to build against
   MOD_NAME: debugger
 
 jobs:
