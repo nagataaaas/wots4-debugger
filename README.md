@@ -97,6 +97,19 @@ Notes from other Mods (last 64):
 
 ## インストール
 
+### 自動インストール（推奨）
+
+1. ゲームを終了してください。
+2. [WayOfTheSamurai4ModInstaller.exe](https://github.com/nagataaaas/wots4-mods/releases/latest/download/WayOfTheSamurai4ModInstaller.exe) をダウンロードして実行してください。
+   - 「Windows によって PC が保護されました」と出たら、「詳細情報」→「実行」を押してください。
+   - 管理者として実行してよいかの確認が出たら、「はい」を押してください（ゲームのフォルダに書き込むためです）。
+3. 画面の案内に沿って進め、Mod の一覧で `debugger` を選んでください。↑↓ で移動し、Space で選び、Enter で確定します。
+
+ModLoader も一緒に入ります。更新も同じ手順でできます。設定（`config.ini`）は引き継がれます。
+
+<details>
+<summary>手動インストール</summary>
+
 > [!WARNING]
 > 事前に [wots4-mods（ModLoader）](https://github.com/nagataaaas/wots4-mods) を導入してください。
 
@@ -104,6 +117,8 @@ Notes from other Mods (last 64):
 2. [Releases](../../releases) から `wots4-mod-debugger-<バージョン>.zip` をダウンロードし、解凍してください。
 3. 解凍して得られた `mods` フォルダを、侍道4のインストールフォルダ（`WayOfTheSamurai4.exe` がある場所）へコピーしてください。すでに `mods` フォルダがある場合は、その中にまとめてください。
 4. `{侍道4インストールフォルダ}/mods/debugger/mod.dll` があることを確認し、ゲームを起動してください。
+
+</details>
 
 ## アンインストール
 
