@@ -95,16 +95,22 @@ Notes from other Mods (last 64):
   20:14:36.902 thread 12392 [example] scene change started
 ```
 
-## 入れ方
+## インストール
 
-この Mod を使うには、ModLoader が必要です。
+> [!WARNING]
+> 事前に [wots4-mods（ModLoader）](https://github.com/nagataaaas/wots4-mods) を導入してください。
 
-1. [wots4-mods の Releases](https://github.com/nagataaaas/wots4-mods/releases) から、ModLoader（`wots4-modloader-<版>.zip`）をダウンロードします。
-2. このリポジトリの [Releases](../../releases) から、`wots4-mod-debugger-<版>.zip` をダウンロードします。
-3. 両方の zip の中身を、`WayOfTheSamurai4.exe` と同じフォルダへコピーします。
+1. ゲームを終了してください。
+2. [Releases](../../releases) から `wots4-mod-debugger-<バージョン>.zip` をダウンロードし、解凍してください。
+3. 解凍して得られた `mods` フォルダを、侍道4のインストールフォルダ（`WayOfTheSamurai4.exe` がある場所）へコピーしてください。すでに `mods` フォルダがある場合は、その中にまとめてください。
+4. `{侍道4インストールフォルダ}/mods/debugger/mod.dll` があることを確認し、ゲームを起動してください。
 
-詳しくは、[入れ方](https://github.com/nagataaaas/wots4-mods/blob/master/docs/INSTALL.md)を見てください。
-外すときは、`mods/debugger/` を消します。エラーログとミニダンプが要らなければ、`logs/` の中の `error_*.log` と `crash_*.dmp` も消してください。
+## アンインストール
+
+1. ゲームを終了してください。
+2. `{侍道4インストールフォルダ}/mods/debugger/` フォルダを削除してください。中の設定（`config.ini`）も消えます。
+
+エラーログとミニダンプが要らなければ、`{侍道4インストールフォルダ}/logs/` の中の `error_*.log` と `crash_*.dmp` も削除してください。
 
 ## ビルド
 

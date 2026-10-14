@@ -97,14 +97,20 @@ Notes from other Mods (last 64):
 
 ## Installation
 
-This Mod requires the ModLoader.
+> [!WARNING]
+> Install [wots4-mods (ModLoader)](https://github.com/nagataaaas/wots4-mods) first.
 
-1. Download the ModLoader (`wots4-modloader-<version>.zip`) from the [wots4-mods Releases](https://github.com/nagataaaas/wots4-mods/releases).
-2. Download `wots4-mod-debugger-<version>.zip` from this repository's [Releases](../../releases).
-3. Copy the contents of both zips into the same folder as `WayOfTheSamurai4.exe`.
+1. Close the game.
+2. Download `wots4-mod-debugger-<version>.zip` from [Releases](../../releases) and extract it.
+3. Copy the extracted `mods` folder into the game's installation folder (the folder containing `WayOfTheSamurai4.exe`). If a `mods` folder already exists, merge the contents into it.
+4. Confirm that `{game installation folder}/mods/debugger/mod.dll` exists, then start the game.
 
-For details, see [Installation](https://github.com/nagataaaas/wots4-mods/blob/master/docs/INSTALL.md).
-To uninstall, delete `mods/debugger/`. If you do not need the error logs and minidumps, also delete `error_*.log` and `crash_*.dmp` in `logs/`.
+## Uninstallation
+
+1. Close the game.
+2. Delete the `{game installation folder}/mods/debugger/` folder. The settings in it (`config.ini`) are deleted too.
+
+If you do not need the error logs and minidumps, also delete `error_*.log` and `crash_*.dmp` in `{game installation folder}/logs/`.
 
 ## Building
 
