@@ -12,13 +12,17 @@ if(NOT COMMAND wots4_add_mod)
     set(WOTS4_BUILD_TESTS ON)
 endif()
 
+wots4_use_minhook()
+
 wots4_add_mod(debugger
     SOURCES src/mod.cpp
         src/core/session.cpp src/core/notes.cpp
         src/error_log/error_log.cpp src/error_log/report.cpp src/error_log/minidump.cpp
+        src/jank/jank.cpp src/jank/frame_hook.cpp src/jank/monitor.cpp src/jank/analysis.cpp src/jank/report.cpp
     DEF src/mod.def
-    LIBS bcrypt.lib
-    FILES config.ini)
+    LIBS bcrypt.lib wots4_minhook
+    FILES config.ini
+    LICENSES docs/licenses/minhook.txt)
 target_include_directories(mod_debugger PRIVATE include)
 
 if(WOTS4_BUILD_TESTS)
@@ -33,4 +37,20 @@ if(WOTS4_BUILD_TESTS)
         -DMOD=$<TARGET_FILE:mod_debugger>
         -DWORK=${CMAKE_CURRENT_BINARY_DIR}/debugger_tree
         -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_debugger_probe.cmake)
+
+    # jank's counting, with synthetic samples
+    add_executable(jank_analysis_test tests/jank_analysis_test.cpp src/jank/analysis.cpp)
+    target_include_directories(jank_analysis_test PRIVATE src)
+    add_test(NAME jank_analysis_test COMMAND jank_analysis_test)
+
+    # jank's threads and log without the game: the probe exe stands in for the game and presents frames itself
+    add_executable(jank_probe tests/jank_probe.cpp
+        src/core/session.cpp src/core/notes.cpp
+        src/jank/monitor.cpp src/jank/analysis.cpp src/jank/report.cpp)
+    target_include_directories(jank_probe PRIVATE src)
+    target_link_libraries(jank_probe PRIVATE wots4::sdk)
+    add_test(NAME jank_probe COMMAND ${CMAKE_COMMAND}
+        -DPROBE=$<TARGET_FILE:jank_probe>
+        -DWORK=${CMAKE_CURRENT_BINARY_DIR}/jank_tree
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/run_jank_probe.cmake)
 endif()

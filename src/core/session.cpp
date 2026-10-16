@@ -3,6 +3,7 @@
 #include <wots4/mod_api.h>
 #include <cstdio>
 #include <cwchar>
+#include <cwctype>
 
 namespace debugger {
 Session session;
@@ -81,6 +82,30 @@ bool readConfigFlag(const wchar_t* section, const wchar_t* key, bool fallback) {
         value, fallback ? 1 : 0);
     hostLog(message);
     return fallback;
+}
+
+unsigned readConfigNumber(const wchar_t* section, const wchar_t* key, unsigned fallback, unsigned minimum,
+    unsigned maximum) {
+    wchar_t value[32];
+    readConfig(section, key, L"", value, ARRAYSIZE(value));
+    if (!value[0]) return fallback;
+    wchar_t* end = nullptr;
+    const unsigned long number = wcstoul(value, &end, 10);
+    const bool onlyDigits = iswdigit(value[0]) && end && *end == L'\0';
+    if (onlyDigits && number >= minimum && number <= maximum) return static_cast<unsigned>(number);
+    char message[256];
+    sprintf_s(message, "config.ini: [%ls] %ls=%ls is not a valid value (use %u to %u); using %u", section, key,
+        value, minimum, maximum, fallback);
+    hostLog(message);
+    return fallback;
+}
+
+bool claimGameMemory(uintptr_t address, uint32_t length) {
+    return host && host->claim && host->claim(session.self, address, length);
+}
+
+void releaseGameMemory() {
+    if (host && host->releaseClaims) host->releaseClaims(session.self);
 }
 
 void createLogDirectory() {

@@ -7,6 +7,7 @@ A debugging tool for making Mods for Way of the Samurai 4. It is a Mod that bund
 | Feature | What it does | Default |
 | --- | --- | --- |
 | [Error log](#error-log-error_log) (`error_log`) | Records exceptions, and also writes a minidump when the game crashes | On |
+| [Hitch log](#hitch-log-jank) (`jank`) | Finds frames that took longer than usual, and writes what the game was doing during them | Off |
 
 Whichever features you use, other Mods can leave clues with [notes](#leaving-clues-from-other-mods-notes).
 
@@ -47,6 +48,38 @@ The top of the error log has the file size and SHA-256 of the game's exe. You ca
 - It does not swallow exceptions or modify the game's code or saves. It does not send anything over the network.
 - The error log and the minidump contain the paths of the exe and DLLs. The minidump also contains part of the game's memory (all of it with `full`). Be careful when sharing them.
 
+## Hitch log (jank)
+
+A feature for finding the cause when the game's picture stops for a moment (a frame is shown late). Use it when optimizing the game. It is off by default. Set `enabled=1` in `[jank]` of `config.ini` to use it.
+
+It measures the time of each frame of the game (from showing one picture to showing the next), and when a frame took longer than usual, records it in `logs/` in the game folder.
+
+```
+logs/jank_<date-time>_<process ID>.log
+```
+
+To do this, it stops the thread doing the game's work (the main thread) for a very short time (a few microseconds) to see what it is doing, every millisecond (sampling). It counts the samples taken during a slow frame and shows where the time went as shares. This makes the game a little heavier, so do not use it while just playing.
+
+For each slow frame, it writes a `==== Slow frame #<frame number>: <time taken> ms` section.
+
+| Line / heading | Contents |
+| --- | --- |
+| `Timing` | The time of the work for the frame shown (the `Frame` call), and the time before it (waiting for the next frame, window messages) |
+| `Main thread` | How long the main thread ran on a CPU, and the number of page faults of the process. If the CPU time is much shorter than the frame time, it was waiting for something (such as reading a file) |
+| `Game` | The game's state (the task's state function, whether a script is running and its kind, whether a map is loading, whether game time is stopped). If it changed during the frame, both before and after |
+| `Steps of the main loop` | Which step of the main loop it was in (waiting for the next frame, input, the game's update, rendering, display [Present], task switch, and so on) |
+| `Calls in game code that were running` | Calls in the game's code (return addresses) that were on the stack: the share of time spent inside each call. For a direct call, the address of the function called is written too |
+| `Where the main thread was executing` | The code that was running. In the game, the function (its start address is estimated from the padding before it, marked with `~`); in a DLL, `<DLL name>!<nearby export name>+<offset>` |
+| `Most common stacks` | The most frequent stacks (from the inside out) |
+
+Addresses are converted to the game exe's default base address (`00400000`). Samples are picked up by scanning the stack, so unrelated values (left over from earlier calls) can be mixed in. Treat entries with only a few samples as noise.
+
+In addition, at a fixed interval (60 seconds by default), it writes one line with the number of frames, the FPS and the distribution of frame times (median p50, p95, p99, maximum) for that period. Use it to compare before and after an optimization.
+
+- By default, a frame counts as slow when it takes at least 1.5 times the median of recent frames (at least the median + 5 ms). That is 50 ms at 30 FPS and 25 ms at 60 FPS.
+- Up to 20 frames per minute are written in detail. Frames beyond that are only counted, and the count is written in the next section and in the summary line.
+- It does not modify the game's code or saves. It only points one entry of the table through which the game calls its frame function at a function that measures the time.
+
 ## Settings (config.ini)
 
 `mods/debugger/config.ini` has a section for each feature (`[<feature name>]`). `enabled=1` turns that feature on, and `0` turns it off. If the file or an entry is missing, the "Default" in the table above and the default value of each entry below are used.
@@ -55,6 +88,13 @@ The top of the error log has the file size and SHA-256 of the game's exe. You ca
 [error_log]
 enabled=1
 minidump=standard
+
+[jank]
+enabled=0
+threshold_ms=0
+sample_interval_us=1000
+max_reports_per_minute=20
+summary_seconds=60
 ```
 
 `minidump` in `[error_log]` is the detail level of the minidump written on a crash. The default is `standard`.
@@ -69,6 +109,15 @@ minidump=standard
 If you write an invalid value, the default value is used and this is written to `mod_loader.log`.
 If the minidump cannot be written with `standard` or `full`, it is written again with `small`. The level actually written is shown in "the result of the minidump" in the error log.
 Minidumps can be opened in WinDbg or Visual Studio.
+
+Entries in `[jank]`:
+
+| Entry | Contents | Default |
+| --- | --- | --- |
+| `threshold_ms` | Record frames that take at least this many milliseconds. `0` means automatic (1.5 times the median of recent frames, at least the median + 5 ms) | `0` |
+| `sample_interval_us` | Interval between looks at the main thread (microseconds, 250 to 10000). Shorter gives finer detail but makes the game heavier | `1000` |
+| `max_reports_per_minute` | Frames written in detail per minute (0 to 600) | `20` |
+| `summary_seconds` | Interval of the frame time summary (seconds, 0 to 3600). `0` means none | `60` |
 
 ## Leaving clues from other Mods (notes)
 
@@ -125,7 +174,7 @@ The ModLoader is installed along with it. The same steps update the Mod, and you
 1. Close the game.
 2. Delete the `{game installation folder}/mods/debugger/` folder. The settings in it (`config.ini`) are deleted too.
 
-If you do not need the error logs and minidumps, also delete `error_*.log` and `crash_*.dmp` in `{game installation folder}/logs/`.
+If you do not need the records, also delete `error_*.log`, `crash_*.dmp` and `jank_*.log` in `{game installation folder}/logs/`.
 
 ## Building
 

@@ -59,6 +59,8 @@ expect(count EQUAL 0 "no error_*.log without exceptions")
 expect(NOT EXISTS ${WORK}/logs "no logs folder without exceptions")
 string(FIND "${loader_log}" "[debugger] error_log: recording exceptions (minidump=standard)" at)
 expect(NOT at EQUAL -1 "error_log is enabled with minidump=standard without config.ini")
+string(FIND "${loader_log}" "[debugger] jank: disabled in config.ini" at)
+expect(NOT at EQUAL -1 "jank is off without config.ini")
 
 # 2. standard: records of first-chance and fatal exceptions, and the minidump
 run_probe(crash "enabled=1\nminidump=standard")
@@ -126,7 +128,18 @@ expect(NOT at EQUAL -1 "an invalid enabled value is reported in mod_loader.log")
 string(FIND "${loader_log}" "error_log: recording exceptions" at)
 expect(NOT at EQUAL -1 "error_log starts with an invalid enabled value")
 
-# 8. Even a process that really crashes with an unhandled exception is recorded by the filter Windows calls
+# 8. jank: an invalid number falls back, and an exe that is not the game is refused without changing anything
+run_probe(quiet "enabled=1\n[jank]\nenabled=1\nsample_interval_us=50")
+string(FIND "${loader_log}" "config.ini: [jank] sample_interval_us=50 is not a valid value (use 250 to 10000); using 1000" at)
+expect(NOT at EQUAL -1 "an out-of-range jank number is reported in mod_loader.log")
+string(FIND "${loader_log}" "[debugger] jank: this game exe is not the supported version; slow frames are not recorded" at)
+expect(NOT at EQUAL -1 "jank refuses an exe that is not the supported game")
+file(GLOB jank_logs ${WORK}/logs/jank_*.log)
+expect(NOT jank_logs "no jank log when jank is refused")
+string(FIND "${loader_log}" "error_log: recording exceptions" at)
+expect(NOT at EQUAL -1 "error_log still starts when jank is refused")
+
+# 9. Even a process that really crashes with an unhandled exception is recorded by the filter Windows calls
 run_probe(die "minidump=standard")
 expect(result STREQUAL "Access violation" "the probe ends with an access violation")  # CMake returns the exception's name
 expect(text MATCHES "==== Fatal exception" "a crashing process records the fatal exception")

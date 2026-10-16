@@ -2,6 +2,7 @@
 // To add a feature, create src/<feature name>/ and add it to features below. Its setting is [<feature name>] enabled=1/0 in config.ini.
 #include "core/core.h"
 #include "error_log/error_log.h"
+#include "jank/jank.h"
 #include <wots4/mod_api.h>
 #include <cstdio>
 
@@ -18,6 +19,7 @@ struct Feature {
 
 const Feature features[] = {
     {L"error_log", "error_log", true, error_log::initialize},
+    {L"jank", "jank", false, jank::initialize},
 };
 
 volatile LONG initialized;
