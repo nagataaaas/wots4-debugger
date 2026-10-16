@@ -8,6 +8,7 @@ A debugging tool for making Mods for Way of the Samurai 4. It is a Mod that bund
 | --- | --- | --- |
 | [Error log](#error-log-error_log) (`error_log`) | Records exceptions, and also writes a minidump when the game crashes | On |
 | [Hitch log](#hitch-log-jank) (`jank`) | Finds frames that took longer than usual, and writes what the game was doing during them | Off |
+| [Voice log](#voice-log-voice_trace) (`voice_trace`) | Each time a character voice is played, writes whether it played and, if not, why | Off |
 
 Whichever features you use, other Mods can leave clues with [notes](#leaving-clues-from-other-mods-notes).
 
@@ -80,6 +81,29 @@ In addition, at a fixed interval (60 seconds by default), it writes one line wit
 - Up to 20 frames per minute are written in detail. Frames beyond that are only counted, and the count is written in the next section and in the summary line.
 - It does not modify the game's code or saves. It only points one entry of the table through which the game calls its frame function at a function that measures the time.
 
+## Voice log (voice_trace)
+
+A feature for finding the cause when a character voice (shopkeepers and talk, battle cries, and so on) does not play. It is off by default. Set `enabled=1` in `[voice_trace]` of `config.ini` to use it.
+
+It writes one line per voice to `logs/` in the game folder.
+
+```
+logs/voice_<date-time>_<process ID>.log
+```
+
+- Voices that scripts play (shopkeepers and talk) are written whether they played or not.
+- Other voices (battle cries and so on) are written only when they did not play (with `log_played_game_voices=1`, also when they played). Up to `max_lines_per_minute` lines per minute; beyond that, only the count is written.
+- A line is also written when the setting that keeps character voices from playing is switched.
+
+Each line has the time, the character (the ID that scripts use, the NPC number and the voice set), the voice number and the result. When the voice did not play, it also has the check that stopped it (the character was made voiceless, character voices are set not to play, there is no such voice, all the streams that can play at once are in use, and so on) and the state at that moment (how many streams and sound slots were in use).
+
+```
+18:18:04.015 PlayVoiceSE: character ID 7 (NPC 1006), voice set 42, voice 38: not played: the voice is streamed and 5 streams are already in use [caller 0x00568e19, forced=yes; muted=no, streams=5/5, slots in use=5/24, record=streamed]
+```
+
+- It does not modify the game's code or saves. It only reads the state and records it at the start of the three functions that play a voice.
+- It writes a line to the log each time a voice is played, so leave it off while just playing.
+
 ## Settings (config.ini)
 
 `mods/debugger/config.ini` has a section for each feature (`[<feature name>]`). `enabled=1` turns that feature on, and `0` turns it off. If the file or an entry is missing, the "Default" in the table above and the default value of each entry below are used.
@@ -95,6 +119,11 @@ threshold_ms=0
 sample_interval_us=1000
 max_reports_per_minute=20
 summary_seconds=60
+
+[voice_trace]
+enabled=0
+log_played_game_voices=0
+max_lines_per_minute=120
 ```
 
 `minidump` in `[error_log]` is the detail level of the minidump written on a crash. The default is `standard`.
@@ -118,6 +147,13 @@ Entries in `[jank]`:
 | `sample_interval_us` | Interval between looks at the main thread (microseconds, 250 to 10000). Shorter gives finer detail but makes the game heavier | `1000` |
 | `max_reports_per_minute` | Frames written in detail per minute (0 to 600) | `20` |
 | `summary_seconds` | Interval of the frame time summary (seconds, 0 to 3600). `0` means none | `60` |
+
+Entries in `[voice_trace]`:
+
+| Entry | Meaning | Default |
+| --- | --- | --- |
+| `log_played_game_voices` | `1` also writes voices other than scripts' (battle cries and so on) when they played | `0` |
+| `max_lines_per_minute` | Lines per minute about voices other than scripts' (0 to 6000). Script voices are not counted and are always written | `120` |
 
 ## Leaving clues from other Mods (notes)
 
@@ -174,7 +210,7 @@ The ModLoader is installed along with it. The same steps update the Mod, and you
 1. Close the game.
 2. Delete the `{game installation folder}/mods/debugger/` folder. The settings in it (`config.ini`) are deleted too.
 
-If you do not need the records, also delete `error_*.log`, `crash_*.dmp` and `jank_*.log` in `{game installation folder}/logs/`.
+If you do not need the records, also delete `error_*.log`, `crash_*.dmp`, `jank_*.log` and `voice_*.log` in `{game installation folder}/logs/`.
 
 ## Building
 

@@ -19,6 +19,7 @@ wots4_add_mod(debugger
         src/core/session.cpp src/core/notes.cpp
         src/error_log/error_log.cpp src/error_log/report.cpp src/error_log/minidump.cpp
         src/jank/jank.cpp src/jank/frame_hook.cpp src/jank/monitor.cpp src/jank/analysis.cpp src/jank/report.cpp
+        src/voice_trace/voice_trace.cpp
     DEF src/mod.def
     LIBS bcrypt.lib wots4_minhook
     FILES config.ini
@@ -42,6 +43,21 @@ if(WOTS4_BUILD_TESTS)
     add_executable(jank_analysis_test tests/jank_analysis_test.cpp src/jank/analysis.cpp)
     target_include_directories(jank_analysis_test PRIVATE src)
     add_test(NAME jank_analysis_test COMMAND jank_analysis_test)
+
+    # voice_trace's reasons for a silent voice, with synthetic attempts
+    add_executable(voice_trace_diagnosis_test tests/voice_trace_diagnosis_test.cpp)
+    target_include_directories(voice_trace_diagnosis_test PRIVATE src)
+    add_test(NAME voice_trace_diagnosis_test COMMAND voice_trace_diagnosis_test)
+
+    # voice_trace's hooks on a copy of the exe: runs the game's own voice code with a synthetic character and
+    # sound tables (the game is not started)
+    set(WOTS4_UNPACKED_EXE "${WOTS4_ROOT}/research/bin/WayOfTheSamurai4.unpacked.exe" CACHE FILEPATH "Decrypted exe")
+    file(TO_NATIVE_PATH "${WOTS4_UNPACKED_EXE}" unpacked_native)
+    wots4_add_probe(voice_trace_native_probe SOURCES tests/voice_trace_native_probe.cpp src/voice_trace/voice_trace.cpp
+        LIBS wots4_minhook
+        INCLUDES ${CMAKE_CURRENT_SOURCE_DIR}/src
+        LINK_OPTIONS /BASE:0x10000000 /DYNAMICBASE
+        ARGS ${unpacked_native} NEEDS_EXE)
 
     # jank's threads and log without the game: the probe exe stands in for the game and presents frames itself
     add_executable(jank_probe tests/jank_probe.cpp

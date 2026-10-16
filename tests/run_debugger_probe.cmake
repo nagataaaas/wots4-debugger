@@ -61,6 +61,8 @@ string(FIND "${loader_log}" "[debugger] error_log: recording exceptions (minidum
 expect(NOT at EQUAL -1 "error_log is enabled with minidump=standard without config.ini")
 string(FIND "${loader_log}" "[debugger] jank: disabled in config.ini" at)
 expect(NOT at EQUAL -1 "jank is off without config.ini")
+string(FIND "${loader_log}" "[debugger] voice_trace: disabled in config.ini" at)
+expect(NOT at EQUAL -1 "voice_trace is off without config.ini")
 
 # 2. standard: records of first-chance and fatal exceptions, and the minidump
 run_probe(crash "enabled=1\nminidump=standard")

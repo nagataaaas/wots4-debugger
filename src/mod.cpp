@@ -3,6 +3,7 @@
 #include "core/core.h"
 #include "error_log/error_log.h"
 #include "jank/jank.h"
+#include "voice_trace/voice_trace.h"
 #include <wots4/mod_api.h>
 #include <cstdio>
 
@@ -20,6 +21,7 @@ struct Feature {
 const Feature features[] = {
     {L"error_log", "error_log", true, error_log::initialize},
     {L"jank", "jank", false, jank::initialize},
+    {L"voice_trace", "voice_trace", false, voice_trace::initialize},
 };
 
 volatile LONG initialized;
