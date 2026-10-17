@@ -1,6 +1,6 @@
 # debugger
 
-[English](README.en.md)
+[English](README.en.md) | [更新履歴](CHANGELOG.md)
 
 『侍道4』の Mod を作るためのデバッグツールです。いくつかの機能をまとめた Mod で、機能ごとに `config.ini` で使うかどうかを選べます。
 

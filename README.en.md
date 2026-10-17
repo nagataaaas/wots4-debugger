@@ -1,6 +1,6 @@
 # debugger
 
-[日本語](README.md)
+[日本語](README.md) | [Changelog](CHANGELOG.en.md)
 
 A debugging tool for making Mods for Way of the Samurai 4. It is a Mod that bundles several features, and you can choose whether to use each feature in `config.ini`.
 
